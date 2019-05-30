@@ -32,7 +32,7 @@ tf.reset_default_graph()
 # In[9]:
 # 参数标志路径
 # 参数
-epochs = 10
+epochs = 5
 batch_size = 128
 learning_rate=0.001
 keep_prob_v = 0.7 #dropout layers' keep probability
@@ -42,7 +42,7 @@ keep_prob_v = 0.7 #dropout layers' keep probability
 # 标志
 predflag = 1
 in_data_flag = 1
-unsup = 1 # unsupervised learning flag
+unsup = 0 # unsupervised learning flag
 
 # 路径
 timestamp = '{:%m-%d_%H-%M/}'.format(datetime.now())
