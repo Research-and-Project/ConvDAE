@@ -15,13 +15,13 @@ Email: z_zhi_hong@163.com
 
 - bsc-ConvDAE & L-ConvDAE: 
 
-  ![image](http://github.com/dawnlh/ConvDAE/raw/master/pipeline/L-ConvDAE.png)
+  ![image](https://github.com/dawnlh/ConvDAE/blob/master/pipeline/L-ConvDAE.png?raw=true)
 
   - the difference between bsc-ConvDAE and L-ConvDAE: 
     - bsc-ConvDAE use “max_pooling2d” in decoder， while L-ConvDAE use “deconv”
 
 - U-ConvDAE: 
-  ![image](http://github.com/dawnlh/ConvDAE/raw/master/pipeline/U-ConvDAE.png)
+  ![image](https://github.com/dawnlh/ConvDAE/blob/master/pipeline/U-ConvDAE.png?raw=true)
 
 
 
@@ -51,11 +51,11 @@ Email: z_zhi_hong@163.com
 
 ## 5. Demo Results
 
-![unsup dots](http://github.com/dawnlh/ConvDAE/raw/master/demo/bsc-ConvDAE_unsup_dots.png)
+![image](https://github.com/dawnlh/ConvDAE/blob/master/demo/unsup-ConvDAE_unsup_dots.png?raw=true)
 
 ![sup](http://github.com/dawnlh/ConvDAE/raw/master/demo/sup-U-ConvDAE_N-MNIST-PIC.png)
 
-![unsup](http://github.com/dawnlh/ConvDAE/raw/master/demo/bsc-ConvDAE_unsup_N-MNIST-PIC.png)
+![unsup](https://github.com/dawnlh/ConvDAE/blob/master/demo/unsup-ConvDAE_unsup_N-MNIST-PIC.png?raw=true)
 
 
 
