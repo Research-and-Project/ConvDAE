@@ -1,64 +1,98 @@
+# -*- coding: utf-8 -*-
 '''
-【累积重构-卷积去噪自编码 预测器】
-使用说明：
-修改内容：模型路径，模型目录； in_data_flag; save_flag; in_imgs gt_imgs, keep_prob定义和feed_dict, outputs (根据act_out_fun)
+【predictor for ConvDAE】
+usage：
+contents to modify：model path, model dir; SAVE_FLAG; 
+in_imgs,  gt_imgs; keep_prob, feed_dict; outputs (according to act_out_fun)
 
-注意事项：
-不同模型的outputs_定义可能不同，但是有时候没有报错，只是结果异常，可以创建模型后确认下outputs_定义
+notes：
+Different models' "outputs_" could be different. Sometimes it won't report errors, 
+but the result is not as expected.In this case, return to your model definition and confirm your "outputs_"
+
+Author: zhihong (z_zhi_hong@163.com)
+Date: 20190505
+Modified: zhihong_20190809
+
 '''
-# In[45]:
-
-
-#导入基本模块
+# In[]:
+# import modules
+import os
 import numpy as np
 import tensorflow as tf
-from datetime import datetime
 from time import time
 import matplotlib.pyplot as plt
-from my_tf_lib import my_io
-from my_imgproc_lib import my_img_evaluation as my_evl
-import os
+import matplotlib.image as plt_img
+from util import my_io
+#from util import my_img_evaluation as my_evl
 
-# In[]
-#图设置
+
+
+# In[]:
+# graph reset
 tf.reset_default_graph()  
 
 
 # In[]:
-# 路径参数
-
-#参数  
-model_ind = -1 #导入模型的序号
-save_flag = 0 #保存预测结果的标志
-positive_polarity = False
+# parameters config
+# setting 
+SAVE_FLAG = 1   # flag of saving the outputs of the network's prediction
 test_batch_size = 100
+pic_size = [28,28]
 
-#路径
-path1 = "N_MNIST_pic/N_MNIST_pic_train.mat"
-path2 = "N_MNIST_pic/N_MNIST_pic_test.mat"
-
-root_model_path = "model_data/"  #模型根目录
-model_dir = "ConvDAE_unsup--05-15_16-00/" #模型保存目录
+# path
+path1 = "./dataset/N_MNIST_pic/N_MNIST_pic_train.mat"
+path2 = "./dataset/N_MNIST_pic/N_MNIST_pic_test.mat"
+root_model_path = "model_data/"  # model's root dir
+model_dir = "L-ConvDAE(unsup)--08-10_20-32/" # model'saving dir
 model_path = root_model_path + model_dir
-model_name = 'my_model' #模型名称
-model_ind = -1 #模型序号
 
-pred_res_path = 'predict_res/'+model_dir #测试结果保存路径
-if not os.path.isdir(pred_res_path) and save_flag:
+# model
+model_name = 'my_model' #model's name
+model_ind = -1  #model's index
+
+pred_res_path = 'predict_res/'+model_dir  # dir of the prediction results
+if not os.path.isdir(pred_res_path) and SAVE_FLAG:
    os.makedirs(pred_res_path)
 
+
+# In[]
+# load model
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+
+restorer = tf.train.import_meta_graph(model_path+model_name+'.meta')
+
+ckpt = tf.train.get_checkpoint_state(model_path)
+if ckpt:
+    ckpt_states = ckpt.all_model_checkpoint_paths
+    restorer.restore(sess, ckpt_states[model_ind])
+    
+# load Ops and variables according to old model and your need
+graph = tf.get_default_graph()
+inputs_ = graph.get_tensor_by_name("inputs/inputs_:0")
+mask_prob = graph.get_tensor_by_name("inputs/Placeholder_1:0")
+targets_ = graph.get_tensor_by_name("inputs/targets_:0")
+keep_prob = graph.get_tensor_by_name("inputs/Placeholder:0")  #for dropout
+#outputs_ = graph.get_tensor_by_name("outputs/outputs_:0")
+outputs_ = graph.get_tensor_by_name("outputs/conv2d/Tanh:0")
+cost = graph.get_tensor_by_name("loss/Mean:0")
+
+
 # In[]:
-# 加载数据
+# load data
 pic_test_data = my_io.load_mat(path2)
 pic_test_x = pic_test_data['N_MNIST_pic_test'].astype('float32')
 pic_test_y = pic_test_data['N_MNIST_pic_test_gt'].astype('float32')
 print('pic_test_x: ', pic_test_x.shape, '\tpic_test_y: ', pic_test_y.shape)
-in_imgs = pic_test_x
-gt_imgs = pic_test_y
+#in_imgs = pic_test_x
+#gt_imgs = pic_test_y
+test_idx = np.linspace(0,len(pic_test_x)-1,200).astype('int32')
+in_imgs = pic_test_x[test_idx]
+gt_imgs = pic_test_y[test_idx]
 
 
 # In[]:
-# 数据打印测试
+# data disp
 #for k in range(5):
 #    plt.subplot(2,5,k+1)
 #    plt.imshow(test_x[k])
@@ -72,31 +106,8 @@ gt_imgs = pic_test_y
 #    plt.yticks([])
 
 
-# In[]
-#模型加载   
-sess = tf.Session()
-sess.run(tf.global_variables_initializer())
-
-restorer = tf.train.import_meta_graph(model_path+model_name+'.meta')
-
-ckpt = tf.train.get_checkpoint_state(model_path)
-if ckpt:
-    ckpt_states = ckpt.all_model_checkpoint_paths
-    restorer.restore(sess, ckpt_states[model_ind])
-
-graph = tf.get_default_graph()
-inputs_ = graph.get_tensor_by_name("inputs/inputs_:0")
-targets_ = graph.get_tensor_by_name("inputs/targets_:0")
-keep_prob = graph.get_tensor_by_name("inputs/Placeholder:0")  #for dropout
-#outputs_ = graph.get_tensor_by_name("outputs/outputs_:0")
-outputs_ = graph.get_tensor_by_name("outputs/outputs_:0") #for tanh act_out_fun
-#outputs_ = graph.get_tensor_by_name("outputs/conv2d/Tanh:0") #for relu  act_out_fun
-cost = graph.get_tensor_by_name("loss/Mean:0")
-
-
 # In[]:
-# 预测
-# 计算测试集上全部样本平均预测误差，平均耗时和重构结果
+# prediction
 ind = 0
 mean_cost = 0
 time_cost = 0
@@ -104,7 +115,7 @@ reconstructed = np.zeros(in_imgs.shape, dtype='float32')
 for batch_x, batch_y in my_io.batch_iter(test_batch_size,in_imgs, gt_imgs, shuffle=False):
     x = batch_x.reshape((-1, 28, 28, 1))
     y = batch_y.reshape((-1, 28, 28, 1))
-    feed_dict = {inputs_: x, targets_: y, keep_prob:1.0} #for dropout
+    feed_dict = {inputs_: x, targets_: y, keep_prob:1.0, mask_prob:0.0} #for dropout
 #    feed_dict = {inputs_: x, targets_: y}  #for non dropout
     
     time1 = time()
@@ -122,18 +133,22 @@ time_cost = time_cost/len(in_imgs)
 print('\ncurrent mean cost (mse):%f, mean time cost(ms):%f'%(mean_cost, time_cost*1e3))
 
 
-
-# 保存预测结果数据  
-if save_flag:
-    np.save(pred_res_path+'pred_res',reconstructed) 
-    print('\nreconstruction data saved to : \n',pred_res_path+'pred_res.npy' )
+# In[]:
+# save the prediction results
+if SAVE_FLAG:
+#    np.save(pred_res_path+'pred_res',reconstructed)   # save pics in the format of .npy
+#    print('\nreconstruction data saved to : \n',pred_res_path+'pred_res.npy' )    
+    for i in range(len(reconstructed)):
+        plt_img.imsave(pred_res_path+str(i)+'.png', reconstructed[i])
+    print('\nreconstruction data saved to : \n',pred_res_path)
+    
 
 # IAQ: image quality assessment
 #noisy_MSE = my_evl.myMSE(in_imgs, gt_imgs)
 #noisy_PSNR = my_evl.myPSNR(in_imgs, gt_imgs,2)
 #noisy_SSIM = my_evl.mySSIM(in_imgs, gt_imgs)
 #
-#denoise_MSE = my_evl.myMSE(reconstructed, gt_imgs) #这个mse和上面的网络计算的mse很不一样的话，是因为上面进行了极性化
+#denoise_MSE = my_evl.myMSE(reconstructed, gt_imgs)
 #denoise_PSNR = my_evl.myPSNR(reconstructed, gt_imgs,2)
 #denoise_SSIM = my_evl.mySSIM(reconstructed, gt_imgs)
 #
@@ -141,10 +156,15 @@ if save_flag:
 #print('\nIQA after denoising:\nMSE:%f \nPSNR:%fdB \nSSIM:%f'%(denoise_MSE, denoise_PSNR, denoise_SSIM))
 
 
-start = 250
-in_images = in_imgs[start:10000:1000]
-recon_images = reconstructed[start:10000:1000]
-gt_images = gt_imgs[start:10000:1000]
+# In[]:
+# illustrate the results
+start = 0
+end = len(reconstructed)-1
+idx = np.linspace(start, end, 10).astype('int32')  # show 10 results at equal intervals
+
+in_images = in_imgs[idx]
+recon_images = reconstructed[idx]
+gt_images = gt_imgs[idx]
 
 
 fig, axes = plt.subplots(nrows=3, ncols=10, sharex=True, sharey=True, figsize=(20,4))
@@ -158,9 +178,8 @@ fig.tight_layout(pad=0.1)
 
 # In[24]:
 #sess.close()
+sess.close()
 
-
-# In[ ]:
 
 
 

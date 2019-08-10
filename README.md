@@ -1,17 +1,64 @@
-# ConvDAE：convolutional denoising autoencoder
-By：zhihong
+# ConvDAE: convolutional denoising autoencoder
+By: zhihong
 
-Email: zzh.ll@outlook.com
+Email: z_zhi_hong@163.com
+
+## 1. Environments
+
+- python 3.x
+- TensorFlow 1.13.1
+- numpy and so on
 
 
 
-directories:
+## 2. Networks Structures
 
-* logs：训练中损失函数变化曲线记录
-* model_data：训练完成的模型保存文件夹
-* MNIST_diff：数据集1
-* N_MNIST_pic：数据集2
-* predict_res：预测结果保存文件夹（需要在 pred代码中 将saveflag = 1）
-* L-ConvDAE, U-ConvDAE, ConvDAE_unsup：三种类型的卷积去噪自编码器网络模型
-* ConvDAE_pred：加载现有模型进行预测，需要根据网络结构进行修改
-* ConvDAE_finetune：模型微调代码，需要根据网络结构进行修改
+- bsc-ConvDAE & L-ConvDAE: 
+
+  ![image](http://github.com/dawnlh/ConvDAE/raw/master/pipeline/L-ConvDAE.png)
+
+  - the difference between bsc-ConvDAE and L-ConvDAE: 
+    - bsc-ConvDAE use “max_pooling2d” in decoder， while L-ConvDAE use “deconv”
+
+- U-ConvDAE: 
+  ![image](http://github.com/dawnlh/ConvDAE/raw/master/pipeline/U-ConvDAE.png)
+
+
+
+## 3. Directories:
+
+* logs: training logs
+* model_data: trained models
+* dataset: datasets
+* demo: demo results
+* predict_res: prediction results
+* pipeline: structures of networks
+* L-ConvDAE.py, U-ConvDAE.py, bsc_ConvDAE.py: 3 types of network structures
+* ConvDAE_pred.py: prediction codes (based on trained models)
+* ConvDAE_finetune.py: finetune condes (based on trained models)
+* util: utility codes
+
+
+
+## 4. Usage
+
+- Modify corresponding parameters like path, epoches, training modes and so on according to your needs, and the trained models will be saved in the directory of "model_data"
+
+- To use the trained models for prediction,  modify and run the "ConvDAE_pred.py", the results will be saved in the directory of "pred_res"
+- To use the trained models for further finetuning,  modify and run the "ConvDAE_finetune.py", new models will be saved in the directory of "model_data"
+
+
+
+## 5. Demo Results
+
+![unsup dots](http://github.com/dawnlh/ConvDAE/raw/master/demo/bsc-ConvDAE_unsup_dots.png)
+
+![sup](http://github.com/dawnlh/ConvDAE/raw/master/demo/sup-U-ConvDAE_N-MNIST-PIC.png)
+
+![unsup](http://github.com/dawnlh/ConvDAE/raw/master/demo/bsc-ConvDAE_unsup_N-MNIST-PIC.png)
+
+
+
+## 6. Notes
+
+- In practice, in the unsupervised modes, bsc-ConvDAE and L-ConvDAE do better.
