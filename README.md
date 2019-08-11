@@ -53,7 +53,7 @@ Email: z_zhi_hong@163.com
 
 ![image](https://github.com/dawnlh/ConvDAE/blob/master/demo/unsup-ConvDAE_unsup_dots.png?raw=true)
 
-![sup](http://github.com/dawnlh/ConvDAE/raw/master/demo/sup-U-ConvDAE_N-MNIST-PIC.png)
+![unsup](https://github.com/dawnlh/ConvDAE/blob/master/demo/sup-U-ConvDAE_N-MNIST-PIC.png?raw=true)
 
 ![unsup](https://github.com/dawnlh/ConvDAE/blob/master/demo/unsup-ConvDAE_unsup_N-MNIST-PIC.png?raw=true)
 
@@ -61,4 +61,5 @@ Email: z_zhi_hong@163.com
 
 ## 6. Notes
 
-- In practice, in the unsupervised modes, bsc-ConvDAE and L-ConvDAE do better.
+- In practice, in the unsupervised mode, bsc-ConvDAE and L-ConvDAE do better. And U-ConvDAE has relatively better performance in the supervised mode.
+
