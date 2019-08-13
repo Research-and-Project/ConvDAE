@@ -108,11 +108,13 @@ train_data = my_io.load_mat(path1)
 test_data = my_io.load_mat(path2)
 
 train_x = train_data['N_MNIST_pic_train'].astype('float32')
+test_x = test_data['N_MNIST_pic_test'].astype('float32')
 if SUP_FLAG==0:
     train_y = train_x
+#    test_y = test_x
 else:
     train_y = train_data['N_MNIST_pic_train_gt'].astype('float32')
-test_x = test_data['N_MNIST_pic_test'].astype('float32')
+#    test_y = test_data['N_MNIST_pic_test_gt'].astype('float32')
 test_y = test_data['N_MNIST_pic_test_gt'].astype('float32')
 
 print('train_x: ', train_x.shape, '\ttrain_y: ', train_y.shape, 
