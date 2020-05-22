@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-【basic unsupervised convolutional denoising autoencoder——bsc-ConvDAE】
+【basic convolutional denoising autoencoder——bsc-ConvDAE】
 --max_pool in decoder, non dropout layer
 contains two modes:
 unspervised: input data will be randomly masked(through dropout), inputs_ & targets_ are the same (noisy data)
