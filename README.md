@@ -1,5 +1,5 @@
 # ConvDAE: convolutional denoising autoencoder
-By: zhihong
+By: [Zhihong Zhang](https://github.com/dawnlh)
 
 Email: z_zhi_hong@163.com
 
@@ -7,8 +7,7 @@ Email: z_zhi_hong@163.com
 
 - python 3.x
 - TensorFlow 1.13.1
-- numpy and so on
-
+- numpy, matplotlib, scikit-image, scipy
 
 
 ## 2. Networks Structures
@@ -61,5 +60,7 @@ Email: z_zhi_hong@163.com
 
 ## 6. Notes
 
-- In practice, in the unsupervised mode, bsc-ConvDAE and L-ConvDAE do better. And U-ConvDAE has relatively better performance in the supervised mode.
+- **About the skip connection**: In practice, in the unsupervised mode, bsc-ConvDAE and L-ConvDAE do better. And U-ConvDAE has relatively better performance in the supervised mode. This is probably because the skip connections transfer the input directly to the output in the U-net structure, which makes the mask(corruption) operation in the unsupervised mode fail to take effect. As the unsupervised mode mainly depend on the encoder-decoder process to eliminate the noise. The solution which may relieve this phenomena is to deprecate the long range skip connections that connects the input and output directly, and just keep the inner short ones; or directly don't use skip connection, i.e. the bsc-ConvDAE or L-ConvDAE.
 
+
+- **About the blur effect**: Sometimes, the result of the unsupervised network may seem blurry, This is probably because the size of the inner layers of the network is too small, which means the encoder compress the information too much. In addition, the data itself can also have a great effect on the network result, and it's a hard problem to solve.
