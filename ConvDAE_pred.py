@@ -24,7 +24,8 @@ import matplotlib.pyplot as plt
 import matplotlib.image as plt_img
 from util import my_io
 #from util import my_img_evaluation as my_evl
-
+from tensorflow.compat.v1 import ConfigProto
+from tensorflow.compat.v1 import InteractiveSession
 
 # In[] 
 # environment config
@@ -44,26 +45,30 @@ tf.reset_default_graph()
 # setting 
 SAVE_FLAG = 1   # flag of saving the outputs of the network's prediction
 test_batch_size = 100
-pic_size = [28,28]
+pic_size = [64,64] # picture size, for sml
+# pic_size = [28,28] # picture size, for N-MNIST
 
 # path
-data_path = "./dataset/N_MNIST_pic/N_MNIST_pic_test.mat"
+data_path = "./dataset/single_molecule_localization/sml_test.mat" # for sml
+# data_path = "./dataset/N_MNIST_pic/N_MNIST_pic_test.mat" # for N-MNIST
+
 root_model_path = "model_data/"  # model's root dir
-model_dir = "L-ConvDAE(sup)--08-11_14-45/" # model'saving dir
-model_path = root_model_path + model_dir
+model_dir = "bsc-ConvDAE(unsup)--02-24_10-33" # model'saving dir
+model_path = root_model_path + model_dir + "/"
 
 # model
 model_name = 'my_model' #model's name
 model_ind = -1  #model's index
 
-pred_res_path = './predict_res/'+model_dir  # dir of the prediction results
+pred_res_path = './predict_res/' + data_path.split('/')[-1][0:-4] + "-" + model_dir + "/" # dir of the prediction results
 if not os.path.isdir(pred_res_path) and SAVE_FLAG:
    os.makedirs(pred_res_path)
 
 
 # In[]
 # load model
-sess = tf.Session()
+# sess = tf.Session()
+sess = InteractiveSession(config=config)
 sess.run(tf.global_variables_initializer())
 
 restorer = tf.train.import_meta_graph(model_path+model_name+'.meta')
@@ -79,16 +84,18 @@ inputs_ = graph.get_tensor_by_name("inputs/inputs_:0")
 mask_prob = graph.get_tensor_by_name("inputs/Placeholder_1:0")
 targets_ = graph.get_tensor_by_name("inputs/targets_:0")
 keep_prob = graph.get_tensor_by_name("inputs/Placeholder:0")  # for dropout
-#outputs_ = graph.get_tensor_by_name("outputs/outputs_:0")
-#outputs_ = graph.get_tensor_by_name("outputs/conv2d/Relu:0")  # act_fun = relu
-outputs_ = graph.get_tensor_by_name("outputs/conv2d/Tanh:0") # act_fun = relu
+
+outputs_ = graph.get_tensor_by_name("outputs/outputs_:0") # for act_fun = relu
+# outputs_ = graph.get_tensor_by_name("outputs/conv2d/Relu:0") 
+# outputs_ = graph.get_tensor_by_name("outputs/conv2d/Tanh:0") #for act_fun = tanh
+
 cost = graph.get_tensor_by_name("loss/Mean:0")
 
 
 # In[]:
 # load data
 pic_test_data = my_io.load_mat(data_path)
-pic_test_x = pic_test_data['N_MNIST_pic_test'].astype('float32')
+pic_test_x = pic_test_data['data'].astype('float32')
 print('pic_test_x: ', pic_test_x.shape)
 in_imgs = pic_test_x
 #num_selected = 200
@@ -124,9 +131,13 @@ print('\nmean time cost(ms):%f\n'%(time_cost*1e3))
 # save the prediction results
 if SAVE_FLAG:
 #    np.save(pred_res_path+'pred_res',reconstructed)   # save pics in the format of .npy
-#    print('\nreconstruction data saved to : \n',pred_res_path+'pred_res.npy' )    
-    for i in range(len(reconstructed)):
-        plt_img.imsave(pred_res_path+str(i)+'.png', reconstructed[i], cmap=plt.cm.gray)
+#    print('\nreconstruction data saved to : \n',pred_res_path+'pred_res.npy' ) 
+
+    data_save = {'reconstructed': reconstructed} # save pics in the format of .mat
+    my_io.save_mat(pred_res_path +'recon.mat', data_save) 
+     
+    for i in range(len(reconstructed)): # save pics in the format of .png
+        plt_img.imsave(pred_res_path+'png'+str(i)+'.png', reconstructed[i], cmap=plt.cm.gray)
     print('\nreconstruction data saved to : \n',pred_res_path)
     
 
@@ -147,7 +158,7 @@ for images, row in zip([in_images, recon_images], axes):
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
 fig.tight_layout(pad=0.1)
-
+plt.show()
 
 # In[24]:
 # release

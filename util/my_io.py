@@ -21,10 +21,12 @@ def load_mat(filepath):
     data = sio.loadmat(filepath);
     header = data.pop('__header__');
     version = data.pop('__version__');
-    print('info: ', header, '\nversion: ', version, '\ndatatype: ',
-          data[list(data.keys())[-1]].dtype )
+    # print('info: ', header, '\nversion: ', version, '\ndatatype: ',
+    #       data[list(data.keys())[-1]].dtype )
     return data
     
+def save_mat(filepath, data):
+    sio.savemat(filepath, data) 
 
 ## batch iterator
 
