@@ -42,7 +42,8 @@ epochs = 2
 batch_size = 128
 learning_rate=0.001
 model_ind = -1  # model index
-pic_size = [28,28]
+# pic_size = [64,64] # picture size, for sml
+pic_size = [28,28] # picture size, for N-MNIST
 keep_prob_v = 0.7
 if SUP_FLAG:
     mask_prob_v  = 0.0 # supervised mode: mask layer' drop probability. 
@@ -53,8 +54,11 @@ else:
 t1 = time()
 
 # data path
-path1 = "./dataset/N_MNIST_pic/N_MNIST_pic_train.mat"
-path2 = "./dataset/N_MNIST_pic/N_MNIST_pic_test.mat"
+# dataset path
+# train_path = "./dataset/N_MNIST_pic/N_MNIST_pic_train.mat"
+# test_path = "./dataset/N_MNIST_pic/N_MNIST_pic_test.mat"
+train_path = "./dataset/single_molecule_localization/sml_train.mat"
+test_path = "./dataset/single_molecule_localization/sml_test.mat"
 
 # old model path
 root_old_model_path = "./model_data/"
@@ -104,18 +108,17 @@ training_op = graph.get_operation_by_name('train/Adam')
 
 # In[]:
 # load data
-train_data = my_io.load_mat(path1)
-test_data = my_io.load_mat(path2)
+train_data = my_io.load_mat(train_path)
+test_data = my_io.load_mat(test_path)
 
-train_x = train_data['N_MNIST_pic_train'].astype('float32')
-test_x = test_data['N_MNIST_pic_test'].astype('float32')
+train_x = train_data['data'].astype('float32')
+test_x = test_data['data'].astype('float32')
 if SUP_FLAG==0:
     train_y = train_x
-#    test_y = test_x
+    test_y = test_x
 else:
-    train_y = train_data['N_MNIST_pic_train_gt'].astype('float32')
-#    test_y = test_data['N_MNIST_pic_test_gt'].astype('float32')
-test_y = test_data['N_MNIST_pic_test_gt'].astype('float32')
+    train_y = train_data['data_gt'].astype('float32')
+    test_y = test_data['data_gt'].astype('float32')
 
 print('train_x: ', train_x.shape, '\ttrain_y: ', train_y.shape, 
      '\ntest_x: ', test_x.shape, '\ttest_y: ', test_y.shape)
