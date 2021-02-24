@@ -38,8 +38,10 @@ By: [Zhihong Zhang](https://github.com/dawnlh), [z_zhi_hong@163.com](mailto:z_zh
 
 ## 4. Usage
 
+- Download the following dataset (or create your own dataset) and put them into this directory:
+  - N_MNIST_pic url：https://pan.baidu.com/s/1RcZ5JE-0F5e4EQRCL5fgIQ code：1111
+  - single_molecule_localization url：https://pan.baidu.com/s/14zLWIsZxchD_ZUpjuy5Q6A  code：1111
 - Modify corresponding parameters like path, epoches, training modes and so on according to your needs, and the trained models will be saved in the directory of "model_data"
-
 - To use the trained models for prediction,  modify and run the "ConvDAE_pred.py", the results will be saved in the directory of "pred_res"
 - To use the trained models for further finetuning,  modify and run the "ConvDAE_finetune.py", new models will be saved in the directory of "model_data"
 
